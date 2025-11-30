@@ -1,38 +1,36 @@
 #!/usr/bin/env python3
 
 ''' Log stats Write a Python script that provides some stats about Nginx logs stored in MongoDB:
-
-    Database: logs
-    Collection: nginx
-    Display (same as the example):
-        first line: x logs where x is the number of documents in this collection
-        second line: Methods:
-        5 lines with the number of documents with the method = ["GET", "POST", "PUT", "PATCH", "DELETE"] in this order (see example below - warning: its a tabulation before each line)
-        one line with the number of documents with:
-            method=GET
-            path=/status
+    Database: logs, Collection: nginx,  Display (same as the example):
+    first line: x logs where x is the number of documents in this collection
+    second line: Methods:  5 lines with the number of documents with the 
+    method = ["GET", "POST", "PUT", "PATCH", "DELETE"] in this order
+    one line with the number of documents with:
+    method=GET, path=/status
 '''
 
 
-# default host:port is localhost:27017
-client = MongoClient()
-col = client.logs.nginx
+from pymongo import MongoClient
 
-# have to use empty {} to get count of all docs!
-count = col.count_documents({})
-get = col.count_documents({"method": "GET"})
-post = col.count_documents({"method": "POST"})
-put = col.count_documents({"method": "PUT"})
-patch = col.count_documents({"method": "PATCH"})
-delete = col.count_documents({"method": "DELETE"})
-status = col.count_documents({"method": "GET", "path": "/status"})
+
+def helper(a: dict) -> int:
+    """return log"""
+    
+    client = MongoClient('mongodb://127.0.0.1:27017')
+    logs = client.logs.nginx
+    return logs.count_documents(a)
+
+def main():
+    """ provides some stats about Nginx logs stored in MongoDB """
+    
+    print(f"{helper({})} logs")
+    print("Methods:")
+    print(f"\tmethod GET: {helper({'method': 'GET'})}")
+    print(f"\tmethod POST: {helper({'method': 'POST'})}")
+    print(f"\tmethod PUT: {helper({'method': 'PUT'})}")
+    print(f"\tmethod PATCH: {helper({'method': 'PATCH'})}")
+    print(f"\tmethod DELETE: {helper({'method': 'DELETE'})}")
+    print(f"{helper({'method': 'GET', 'path': '/status'})} status check")
 
 if __name__ == "__main__":
-    print(f"{count} logs")
-    print("Methods:")
-    print(f"\tmethod GET: {get}")
-    print(f"\tmethod POST: {post}")
-    print(f"\tmethod PUT: {put}")
-    print(f"\tmethod PATCH: {patch}")
-    print(f"\tmethod DELETE: {delete}")
-    print(f"{status} status check")
+    main()
