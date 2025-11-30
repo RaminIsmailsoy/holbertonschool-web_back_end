@@ -6,10 +6,8 @@ The top must be ordered  The average score must be part of each item returns wit
 
 
 def top_students(mongo_collection):
-    """
-    Returns all students sorted by average score.
-    Each student will have a new key 'averageScore'.
-    """
+     ''' Returns all students sorted by average score. Each student will have a new key 'averageScore'. '''
+    
     students = []
     for student in mongo_collection.find():
         topics = student.get('topics', [])
@@ -17,7 +15,7 @@ def top_students(mongo_collection):
             avg = sum(topic['score'] for topic in topics) / len(topics)
         else:
             avg = 0
-        student['averageScore'] = round(avg, 2)
+        student['averageScore'] = avg  # Keep full precision
         students.append(student)
 
     # Sort descending by averageScore
